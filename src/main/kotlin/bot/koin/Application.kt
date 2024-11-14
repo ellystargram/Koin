@@ -1,21 +1,47 @@
 package bot.koin
 
+import bot.koin.listener.KoinListener
 import bot.koin.listener.TestListener
 import bot.koin.plugins.configureRouting
 import bot.koin.plugins.configureSerialization
+import bot.koin.table.Member
+import bot.koin.table.Pronounce
+import bot.koin.table.Pronounce.pronounce
+import bot.koin.table.Pronounce.userId
 import io.ktor.server.application.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import kotlin.time.Duration.Companion.hours
 
 var jda: JDA? = null
+var database: Database? = null
 
-fun main(args: Array<String>) {
+fun main(args: Array<String>) = runBlocking {
     io.ktor.server.netty.EngineMain.main(args)
 
 //    jda?.addEventListener(TestListener())
+
+    launch {
+        while (isActive){
+            try{
+                // koin price update
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
+            delay(1.hours)
+        }
+    }
 }
 
 fun Application.module() {
@@ -28,7 +54,8 @@ fun Application.module() {
         .enableIntents(EnumSet.allOf(GatewayIntent::class.java))
         .build()
 
-    jda?.addEventListener(TestListener())
+//    jda?.addEventListener(TestListener())
+    jda?.addEventListener(KoinListener())
 
     println("Bot is running")
 
@@ -37,10 +64,21 @@ fun Application.module() {
     val dbUserName = environment.config.property("database.username").getString()
     val dbPassword = environment.config.property("database.password").getString()
 
-    Database.connect(
+    database = Database.connect(
         url = dbUrl,
         driver = dbDriver,
         user = dbUserName,
         password = dbPassword
     )
+/* not working properly */
+//    transaction { //initialize database
+//        SchemaUtils.createMissingTablesAndColumns(Member, Pronounce)
+//
+//        if (Pronounce.selectAll().empty()){
+//            Pronounce.insert {
+//                it[userId] = null
+//                it[pronounce] = "코인아"
+//            }
+//        }
+//    }
 }

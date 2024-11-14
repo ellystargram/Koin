@@ -31,8 +31,9 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("net.dv8tion:JDA:5.2.1")
-    implementation("org.jetbrains.exposed:exposed-core:0.39.2")
-    implementation("org.jetbrains.exposed:exposed-dao:0.39.2")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.39.2")
+    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("mysql:mysql-connector-java:8.0.29")
 }
