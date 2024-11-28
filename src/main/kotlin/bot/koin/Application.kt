@@ -1,13 +1,8 @@
 package bot.koin
 
 import bot.koin.listener.KoinListener
-import bot.koin.listener.TestListener
 import bot.koin.plugins.configureRouting
 import bot.koin.plugins.configureSerialization
-import bot.koin.table.Member
-import bot.koin.table.Pronounce
-import bot.koin.table.Pronounce.pronounce
-import bot.koin.table.Pronounce.userId
 import io.ktor.server.application.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -16,11 +11,10 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import java.util.*
 import kotlin.time.Duration.Companion.hours
 
@@ -33,10 +27,10 @@ fun main(args: Array<String>) = runBlocking {
 //    jda?.addEventListener(TestListener())
 
     launch {
-        while (isActive){
-            try{
+        while (isActive) {
+            try {
                 // koin price update
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
             delay(1.hours)
@@ -70,7 +64,7 @@ fun Application.module() {
         user = dbUserName,
         password = dbPassword
     )
-/* not working properly */
+    /* not working properly */
 //    transaction { //initialize database
 //        SchemaUtils.createMissingTablesAndColumns(Member, Pronounce)
 //
@@ -81,4 +75,9 @@ fun Application.module() {
 //            }
 //        }
 //    }
+}
+
+fun String.startsWith(column: Column<String>): Op<Boolean> {
+    val likeCriteria = "$this%"
+    return column like likeCriteria
 }

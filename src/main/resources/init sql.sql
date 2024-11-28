@@ -52,3 +52,12 @@ create table command(
 insert into command(keyword, operate_as) values('가입', 'join');
 insert into command(keyword, operate_as) values('join', 'join');
 insert into command(keyword, operate_as) values('회원가입', 'join');
+
+# 탈퇴 명령어들
+insert into command(keyword, operate_as) values('탈퇴', 'leave');
+insert into command(keyword, operate_as) values('leave', 'leave');
+insert into command(keyword, operate_as) values('회원탈퇴', 'leave');
+
+select *
+from command;
+
