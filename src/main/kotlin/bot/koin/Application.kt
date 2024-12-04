@@ -11,10 +11,7 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
+import org.jetbrains.exposed.sql.*
 import java.util.*
 import kotlin.time.Duration.Companion.hours
 
@@ -24,7 +21,6 @@ var database: Database? = null
 fun main(args: Array<String>) = runBlocking {
     io.ktor.server.netty.EngineMain.main(args)
 
-//    jda?.addEventListener(TestListener())
 
     launch {
         while (isActive) {
@@ -78,6 +74,25 @@ fun Application.module() {
 }
 
 fun String.startsWith(column: Column<String>): Op<Boolean> {
-    val likeCriteria = "$this%"
-    return column like likeCriteria
+//    val likeCriteria = "$this%"
+//    return column like likeCriteria
+
+//    val values = column.table
+//        .slice(column)
+//        .selectAll()
+//        .map { it[column] }
+//
+//    return values.map { value ->
+//        Op.build { stringParam(this@startsWith) like "${value}%" }
+//    }.reduce(Op<Boolean>::or)
+
+    return Op.build { stringParam(this@startsWith) like (column + "%") }
+}
+
+fun Long.pow(n: Int): Long {
+    var result = 1L
+    repeat(n) {
+        result *= this
+    }
+    return result
 }

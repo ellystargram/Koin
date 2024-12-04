@@ -3,6 +3,7 @@ package bot.koin.operator
 import bot.koin.exceptions.UserAlreadyExistException
 import bot.koin.exceptions.UserNotExistException
 import bot.koin.table.Member
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -27,6 +28,7 @@ class UserManager {
         if (!isUserExist(userID)) {
             throw UserNotExistException()
         }
+        WalletManager(null).deleteAllWallets(userID)
         transaction {
             Member.deleteWhere {
                 Member.id eq userID

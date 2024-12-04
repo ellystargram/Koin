@@ -4,6 +4,7 @@ import bot.koin.exceptions.UserAlreadyExistException
 import bot.koin.exceptions.UserNotExistException
 import bot.koin.operator.ChatManager
 import bot.koin.operator.UserManager
+import bot.koin.operator.WalletManager
 import bot.koin.startsWith
 import bot.koin.table.Command
 import bot.koin.table.Pronounce
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class KoinListener : ListenerAdapter() {
@@ -36,20 +38,21 @@ class KoinListener : ListenerAdapter() {
         val channel = event.channel
         val chatManager = ChatManager(channel)
 
-//        val joinCommandList = transaction {
-//            Command.select {
-//                (Command.operateAs eq "join")
-//            }.toList()
-//        }
         val userCommand = transaction {
+            println(userMessage)
             Command
-                .select { userMessage.startsWith(Command.keyword) }
-                .firstOrNull()
+//                .select { userMessage.startsWith(Command.keyword) }
+//                .firstOrNull()
+            for (row in Command.selectAll()) {
+                if (userMessage.startsWith(row[Command.keyword])) {
+                    return@transaction row
+                }
+            }
+            return@transaction null
         }
         val userWantCommand = userCommand?.get(Command.operateAs)
-        userCommand?.let { userMessage = userMessage.removePrefix(it[Command.keyword]) }
+        userCommand?.let { userMessage = userMessage.removePrefix(it[Command.keyword]).trim() }
 
-//        if (checkPrefixInList(joinCommandList.map { it[Command.keyword] }, userMessage)) {
         if (userWantCommand == "join"){
             // join command
             try {
@@ -74,9 +77,20 @@ class KoinListener : ListenerAdapter() {
                 chatManager.sendUnknownErrorMessage(e.message)
             }
             return
-        } else if(userWantCommand == null){
-            // not command
-            channel.sendMessage("debug null $userMessage").queue()
+        } else if(userWantCommand == "create_wallet"){
+            val walletManager = WalletManager(chatManager)
+            try {
+                walletManager.createWallet(userID)
+            } catch (e: Exception) {
+                chatManager.sendUnknownErrorMessage(e.message)
+            }
+        } else if (userWantCommand == "delete_wallet") {
+            val walletManager = WalletManager(chatManager)
+            try {
+                walletManager.deleteWallet(userID, userMessage)
+            } catch (e: Exception) {
+                chatManager.sendUnknownErrorMessage(e.message)
+            }
         }
         else {
             // something else fucked up
