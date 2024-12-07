@@ -91,6 +91,13 @@ class KoinListener : ListenerAdapter() {
             } catch (e: Exception) {
                 chatManager.sendUnknownErrorMessage(e.message)
             }
+        } else if(userWantCommand == "get_wallet"){
+            val walletManager = WalletManager(chatManager)
+            try {
+                walletManager.searchWallet(userID, userMessage)
+            } catch (e: Exception) {
+                chatManager.sendUnknownErrorMessage(e.message)
+            }
         }
         else {
             // something else fucked up

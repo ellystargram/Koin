@@ -30,6 +30,9 @@ insert into pronounce(user_id, pronounce) values(null, '헤이코인');
 insert into pronounce(user_id, pronounce) values(null, 'hey koin');
 insert into pronounce(user_id, pronounce) values(null, '코인');
 insert into pronounce(user_id, pronounce) values(null, 'koin');
+insert into pronounce(user_id, pronounce) values(null, 'coin');
+insert into pronounce(user_id, pronounce) values(null, 'heycoin');
+insert into pronounce(user_id, pronounce) values(null, 'heykoin');
 
 # select *
 # from pronounce;
@@ -63,6 +66,12 @@ insert into command(keyword, operate_as) values('지갑삭제', 'delete_wallet')
 insert into command(keyword, operate_as) values('delete_wallet', 'delete_wallet');
 insert into command(keyword, operate_as) values('지갑 삭제', 'delete_wallet');
 insert into command(keyword, operate_as) values('delete wallet', 'delete_wallet');
+
+# 지갑 조회 명령어들
+insert into command(keyword, operate_as) values('지갑조회', 'get_wallet');
+insert into command(keyword, operate_as) values('get_wallet', 'get_wallet');
+insert into command(keyword, operate_as) values('지갑 조회', 'get_wallet');
+insert into command(keyword, operate_as) values('get wallet', 'get_wallet');
 
 create table if not exists crypto_exchanger(
     id BIGINT primary key auto_increment,

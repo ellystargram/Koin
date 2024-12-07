@@ -52,6 +52,14 @@ class WalletManager(val chatManager: ChatManager?) {
 
     }
 
+    fun searchWallet(userID: Long, address: String) {
+        if (address == "") {
+            getWallets(userID)
+        } else {
+            getWallet(userID, address)
+        }
+    }
+
     fun createWallet(userID: Long) {
         if (chatManager == null) {
             return
@@ -81,7 +89,7 @@ class WalletManager(val chatManager: ChatManager?) {
         }
         var exchangerFeatures = "어떤 거래소에서 지갑을 생성하시겠습니까?\n\n"
         exchangers.forEach {
-            exchangerFeatures += ("${it.name} - 수수료율: ${it.defaultFeeRate*100}%\n")
+            exchangerFeatures += ("${it.name} - 수수료율: ${it.defaultFeeRate * 100}%\n")
         }
         val askExchangerMassage = chatManager.sendQuestionMessage("지갑 생성", exchangerFeatures)
 
@@ -91,7 +99,7 @@ class WalletManager(val chatManager: ChatManager?) {
             askExchangerMassage.addReaction(emoji).queue()
         }
 
-        val reactionListener = object : ListenerAdapter(){
+        val reactionListener = object : ListenerAdapter() {
             override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
                 super.onMessageReactionAdd(event)
                 if (event.user?.isBot == true) return
@@ -161,7 +169,7 @@ class WalletManager(val chatManager: ChatManager?) {
             return
         }
 
-        if (!address.matches(Regex("\\w{6,}"))){
+        if (!address.matches(Regex("\\w{6,}"))) {
             chatManager.sendErrorMessage("지갑 삭제 실패", "잘못된 주소입니다.\n 주소는 8자 이상의 영문자로 이루어져야 합니다.\n 명령어: 지갑 삭제 [주소]")
             return
         }
