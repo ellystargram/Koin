@@ -1,9 +1,8 @@
 package bot.koin.operator
 
-import bot.koin.exceptions.UserAlreadyExistException
-import bot.koin.exceptions.UserNotExistException
-import bot.koin.table.Member
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import bot.koin.exception.UserAlreadyExistException
+import bot.koin.exception.UserNotExistException
+import bot.koin.table.User
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -17,7 +16,7 @@ class UserManager {
             throw UserAlreadyExistException()
         }
         transaction {
-            Member.insert {
+            User.insert {
                 it[id] = userID
                 it[joinedDate] = LocalDateTime.now()
             }
@@ -30,16 +29,16 @@ class UserManager {
         }
         WalletManager(null).deleteAllWallets(userID)
         transaction {
-            Member.deleteWhere {
-                Member.id eq userID
+            User.deleteWhere {
+                User.id eq userID
             }
         }
     }
 
     fun isUserExist(userID: Long): Boolean {
         val userInfo = transaction {
-            Member.select {
-                (Member.id eq userID)
+            User.select {
+                (User.id eq userID)
             }.toList()
         }
         return userInfo.isNotEmpty()

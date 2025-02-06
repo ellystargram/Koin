@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import java.awt.Color
 
 class ChatManager(private val channel: MessageChannel) {
-    fun sendGoodMessage(title: String, message: String): Message {
+    fun sendGoodEmbedMessage(title: String, message: String): Message {
         val embed = EmbedBuilder()
             .setTitle(title)
             .setDescription(message)
@@ -17,7 +17,7 @@ class ChatManager(private val channel: MessageChannel) {
         return sendEmbedThenReturnMessage(embed)
     }
 
-    fun sendWarningMessage(title: String, message: String): Message {
+    fun sendWarningEmbedMessage(title: String, message: String): Message {
         val embed = EmbedBuilder()
             .setTitle(title)
             .setDescription(message)
@@ -27,7 +27,7 @@ class ChatManager(private val channel: MessageChannel) {
         return sendEmbedThenReturnMessage(embed)
     }
 
-    fun sendErrorMessage(title: String, message: String): Message {
+    fun sendErrorEmbedMessage(title: String, message: String): Message {
         val embed = EmbedBuilder()
             .setTitle(title)
             .setDescription(message)
@@ -37,7 +37,7 @@ class ChatManager(private val channel: MessageChannel) {
         return sendEmbedThenReturnMessage(embed)
     }
 
-    fun sendUnknownErrorMessage(exceptionMessage: String?): Message {
+    fun sendUnknownErrorEmbedMessage(exceptionMessage: String?): Message {
         val embed = EmbedBuilder()
             .setTitle("잘 모르겠는 에러 발생")
             .setDescription("에러라는 친구가 다음의 메시지를 남기고 갔어요!:\n$exceptionMessage")
@@ -67,7 +67,7 @@ class ChatManager(private val channel: MessageChannel) {
         }
     }
 
-    fun modifyMessageToGood(message: Message, title: String, description: String): Message {
+    fun modifyEmbedMessageToGood(message: Message, title: String, description: String): Message {
         val embed = EmbedBuilder()
             .setTitle(title)
             .setDescription(description)

@@ -1,18 +1,17 @@
 package bot.koin.listener
 
-import bot.koin.exceptions.UserAlreadyExistException
-import bot.koin.exceptions.UserNotExistException
+import bot.koin.exception.UserAlreadyExistException
+import bot.koin.exception.UserNotExistException
+import bot.koin.exception.WalletNotFoundException
 import bot.koin.operator.ChatManager
 import bot.koin.operator.UserManager
 import bot.koin.operator.WalletManager
-import bot.koin.startsWith
 import bot.koin.table.Command
 import bot.koin.table.Pronounce
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class KoinListener : ListenerAdapter() {
@@ -39,11 +38,11 @@ class KoinListener : ListenerAdapter() {
         val chatManager = ChatManager(channel)
 
         val userCommand = transaction {
-            println(userMessage)
-            Command
+//            println(userMessage)
 //                .select { userMessage.startsWith(Command.keyword) }
 //                .firstOrNull()
-            for (row in Command.selectAll()) {
+            val commands = Command.select { (Command.userId.isNull()) or (Command.userId eq userID) }
+            for (row in commands) {
                 if (userMessage.startsWith(row[Command.keyword])) {
                     return@transaction row
                 }
@@ -53,16 +52,16 @@ class KoinListener : ListenerAdapter() {
         val userWantCommand = userCommand?.get(Command.operateAs)
         userCommand?.let { userMessage = userMessage.removePrefix(it[Command.keyword]).trim() }
 
-        if (userWantCommand == "join"){
+        if (userWantCommand == "join") {
             // join command
             try {
                 val userManager = UserManager()
                 userManager.joinUser(userID)
-                chatManager.sendGoodMessage("가입 성공!", "가족이 된걸 환영합니다.")
+                chatManager.sendGoodEmbedMessage("가입 성공!", "가족이 된걸 환영합니다.")
             } catch (e: UserAlreadyExistException) {
-                chatManager.sendErrorMessage("유저 가입 실패", e.message)
+                chatManager.sendErrorEmbedMessage("유저 가입 실패", e.message)
             } catch (e: Exception) {
-                chatManager.sendUnknownErrorMessage(e.message)
+                chatManager.sendUnknownErrorEmbedMessage(e.message)
             }
             return
         } else if (userWantCommand == "leave") {
@@ -70,40 +69,41 @@ class KoinListener : ListenerAdapter() {
             try {
                 val userManager = UserManager()
                 userManager.leaveUser(userID)
-                chatManager.sendGoodMessage("잘가시게!", "누군가 저에대해 묻는다면, 모른다 답하세요!")
+                chatManager.sendGoodEmbedMessage("잘가시게!", "누군가 저에대해 묻는다면, 모른다 답하세요!")
             } catch (e: UserNotExistException) {
-                chatManager.sendErrorMessage("유저 탈퇴 실패", e.message)
+                chatManager.sendErrorEmbedMessage("유저 탈퇴 실패", e.message)
             } catch (e: Exception) {
-                chatManager.sendUnknownErrorMessage(e.message)
+                chatManager.sendUnknownErrorEmbedMessage(e.message)
             }
             return
-        } else if(userWantCommand == "create_wallet"){
+        } else if (userWantCommand == "create_wallet") {
             val walletManager = WalletManager(chatManager)
             try {
                 walletManager.createWallet(userID)
             } catch (e: Exception) {
-                chatManager.sendUnknownErrorMessage(e.message)
+                chatManager.sendUnknownErrorEmbedMessage(e.message)
             }
         } else if (userWantCommand == "delete_wallet") {
             val walletManager = WalletManager(chatManager)
             try {
                 walletManager.deleteWallet(userID, userMessage)
             } catch (e: Exception) {
-                chatManager.sendUnknownErrorMessage(e.message)
+                chatManager.sendUnknownErrorEmbedMessage(e.message)
             }
-        } else if(userWantCommand == "get_wallet"){
+        } else if (userWantCommand == "get_wallet") {
             val walletManager = WalletManager(chatManager)
             try {
                 walletManager.searchWallet(userID, userMessage)
+            } catch (e: WalletNotFoundException) {
+                chatManager.sendErrorEmbedMessage("지갑 찾기 실패", e.message)
             } catch (e: Exception) {
-                chatManager.sendUnknownErrorMessage(e.message)
+                chatManager.sendUnknownErrorEmbedMessage(e.message)
             }
-        }
-        else {
+        } else {
             // something else fucked up
-            channel.sendMessage("debug $userMessage").queue()
+//            channel.sendMessage("debug $userMessage").queue()
+            chatManager.sendWarningEmbedMessage("user Want Message is null", "debug")
         }
-
 
     }
 

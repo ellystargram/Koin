@@ -42,7 +42,9 @@ drop table if exists command;
 create table if not exists command(
     id BIGINT primary key auto_increment,
     keyword TEXT not null,
-    operate_as TEXT not null
+    operate_as TEXT not null,
+    user_id BIGINT default null,
+    foreign key (user_id) references member(id)
 );
 
 # 가입 명령어들
@@ -60,18 +62,40 @@ insert into command(keyword, operate_as) values('지갑생성', 'create_wallet')
 insert into command(keyword, operate_as) values('create_wallet', 'create_wallet');
 insert into command(keyword, operate_as) values('지갑 생성', 'create_wallet');
 insert into command(keyword, operate_as) values('create wallet', 'create_wallet');
+insert into command(keyword, operate_as) values ('createwallet', 'create_wallet');
 
 # 지갑 삭제 명령어들
 insert into command(keyword, operate_as) values('지갑삭제', 'delete_wallet');
 insert into command(keyword, operate_as) values('delete_wallet', 'delete_wallet');
 insert into command(keyword, operate_as) values('지갑 삭제', 'delete_wallet');
 insert into command(keyword, operate_as) values('delete wallet', 'delete_wallet');
+insert into command(keyword, operate_as) values ('deletewallet', 'delete_wallet');
 
 # 지갑 조회 명령어들
 insert into command(keyword, operate_as) values('지갑조회', 'get_wallet');
 insert into command(keyword, operate_as) values('get_wallet', 'get_wallet');
 insert into command(keyword, operate_as) values('지갑 조회', 'get_wallet');
 insert into command(keyword, operate_as) values('get wallet', 'get_wallet');
+insert into command(keyword, operate_as) values ('getwallet', 'get_wallet');
+insert into command(keyword, operate_as) values ('지갑검색', 'get_wallet');
+insert into command(keyword, operate_as) values ('search wallet', 'get_wallet');
+insert into command(keyword, operate_as) VALUES ('searchwallet', 'get_wallet');
+
+# 암호화폐 거래 명령어들
+insert into command(keyword, operate_as) values('거래', 'trade');
+insert into command(keyword, operate_as) values('trade', 'trade');
+insert into command(keyword, operate_as) values('거래하기', 'trade');
+insert into command(keyword, operate_as) values ('exchange','trade');
+insert into command(keyword, operate_as) values ('코인거래', 'trade');
+insert into command(keyword, operate_as) values ('cointrade', 'trade');
+
+# 커맨드 사용자 추가 명령어들
+insert into command(keyword, operate_as) values ('커맨드추가', 'add_command');
+insert into command(keyword, operate_as) values ('add_command', 'add_command');
+
+# 호출어 사용자 추가 명령어들
+insert into command(keyword, operate_as) values ('호출어추가', 'add_pronounce');
+insert into command(keyword, operate_as) values ('add_pronounce', 'add_pronounce');
 
 create table if not exists crypto_exchanger(
     id BIGINT primary key auto_increment,
@@ -130,3 +154,16 @@ create table if not exists wallet(
 );
 
 select * from wallet;
+
+alter table member rename to user;
+select *
+from user;
+
+select *
+from crypto_currency;
+
+select *
+from pronounce;
+
+select *
+from command;

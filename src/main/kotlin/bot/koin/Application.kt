@@ -1,6 +1,7 @@
 package bot.koin
 
 import bot.koin.listener.KoinListener
+import bot.koin.listener.WalletManagerButtonListener
 import bot.koin.plugins.configureRouting
 import bot.koin.plugins.configureSerialization
 import io.ktor.server.application.*
@@ -10,6 +11,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.hooks.EventListener
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.jetbrains.exposed.sql.*
 import java.util.*
@@ -46,6 +52,7 @@ fun Application.module() {
 
 //    jda?.addEventListener(TestListener())
     jda?.addEventListener(KoinListener())
+    jda?.addEventListener(WalletManagerButtonListener())
 
     println("Bot is running")
 

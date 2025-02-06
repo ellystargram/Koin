@@ -1,4 +1,4 @@
-package bot.koin.exceptions
+package bot.koin.exception
 
 class WalletNotFoundException : Exception() {
     override val message: String
